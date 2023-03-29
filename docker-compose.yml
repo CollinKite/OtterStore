@@ -1,0 +1,40 @@
+version: '0.1'
+
+services:
+
+  mongo:
+      image: mongo
+      container_name: otterstore-mongo
+      ports:
+        - "27017:27017"
+      volumes:
+        - mongo-data:/data/db
+      environment:
+        - MONGO_INITDB_DATABASE=OtterStore
+        - MONGO_INITDB_ROOT_USERNAME=root
+        - MONGO_INITDB_ROOT_PASSWORD=example
+        
+  app-api:
+    build: ./AppsAPI
+    container_name: otterstore-app-api
+    ports:
+      - "5001:5001"
+
+  checkout-api:
+    build: ./CheckOutAPI
+    container_name: otterstore-checkout-api
+    ports:
+      - "5002:5002"
+
+
+    # react-app:
+  #   build: ./react-app
+  #   ports:
+  #     - "3000:3000"
+  #   depends_on:
+  #     - checkout-api
+  #     - appstore-api
+
+
+volumes:
+  mongo-data:
