@@ -19,12 +19,16 @@ services:
     container_name: otterstore-app-api
     ports:
       - "5001:5001"
+    depends_on:
+      - mongo
 
   checkout-api:
     build: ./CheckOutAPI
     container_name: otterstore-checkout-api
     ports:
       - "5002:5002"
+    depends_on:
+      - mongo
 
 
     # react-app:
