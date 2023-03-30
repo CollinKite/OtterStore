@@ -1,3 +1,5 @@
+#Credit to https://medium.com/@kevinwilliams.dev/building-a-flutter-web-container-3b13f4b2bd0c for Dockerfile for Flutter Web App
+
 #Stage 1 - Install dependencies and build the app in a build environment
 FROM debian:latest AS build-env
 # Install flutter dependencies
