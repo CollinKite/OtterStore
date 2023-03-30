@@ -30,15 +30,17 @@ services:
     depends_on:
       - mongo
 
+  cors-proxy:
+    build: ./CORSProxy
+    container_name: otterstore-CORS-proxy
+    ports:
+      - "3000:3000"
 
-    # react-app:
-  #   build: ./react-app
-  #   ports:
-  #     - "3000:3000"
-  #   depends_on:
-  #     - checkout-api
-  #     - appstore-api
-
+  flutter-web-app:
+    build: ./otterstore_frontend
+    container_name: otterstore-flutter-web-app
+    ports:
+      - "80:80"
 
 volumes:
   mongo-data:
