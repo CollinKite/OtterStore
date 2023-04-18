@@ -6,7 +6,7 @@ DB_URL = "localhost"
 #connect to MongoDB
 client = pymongo.MongoClient("mongodb://root:example@"+ DB_URL +":27017/")
 
-#connect to sample database
+#connect to database
 db = client.OtterStore
 
 #connect to Apps Collection

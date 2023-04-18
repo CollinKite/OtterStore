@@ -1,5 +1,5 @@
+# docker-compose up --scale checkout-api=3 -d
 version: '0.1'
-
 services:
 
   mongo:
@@ -16,7 +16,6 @@ services:
         
   app-api:
     build: ./AppsAPI
-    container_name: otterstore-app-api
     ports:
       - "5001:5001"
     depends_on:
@@ -24,9 +23,8 @@ services:
 
   checkout-api:
     build: ./CheckOutAPI
-    container_name: otterstore-checkout-api
     ports:
-      - "5002:5002"
+      - "5002"
     depends_on:
       - mongo
 
