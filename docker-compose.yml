@@ -1,12 +1,15 @@
 # docker-compose up --scale checkout-api=3 -d
 version: '0.1'
-services:
+networks:
+  otterstore:
+    driver: bridge
 
+services:
   mongo:
       image: mongo
       container_name: otterstore-mongo
       ports:
-        - "27017:27017"
+        - "27017"
       volumes:
         - mongo-data:/data/db
       environment:
@@ -17,7 +20,9 @@ services:
   app-api:
     build: ./AppsAPI
     ports:
-      - "5001:5001"
+      - "5001"
+    networks:
+      - otterstore
     depends_on:
       - mongo
 
@@ -25,6 +30,8 @@ services:
     build: ./CheckOutAPI
     ports:
       - "5002"
+    networks:
+      - otterstore
     depends_on:
       - mongo
 
@@ -33,12 +40,16 @@ services:
     container_name: otterstore-CORS-proxy
     ports:
       - "3000:3000"
+    networks:
+      - otterstore
 
   flutter-web-app:
     build: ./otterstore_frontend
     container_name: otterstore-flutter-web-app
     ports:
       - "80:80"
+    networks:
+      - otterstore
 
 volumes:
   mongo-data:
