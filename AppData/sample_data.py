@@ -1,7 +1,7 @@
 import pymongo
 
 #SET DB URL HERE
-DB_URL = "localhost"
+DB_URL = "mongo"
 
 #connect to MongoDB
 client = pymongo.MongoClient("mongodb://root:example@"+ DB_URL +":27017/")
@@ -74,6 +74,9 @@ json_data = [
         "price": "0.00"
     }
 ]
+
+#delete all data from Apps Collection
+apps.delete_many({})
 
 #insert data into Apps Collection
 apps.insert_many(json_data)
