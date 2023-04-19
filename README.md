@@ -31,3 +31,10 @@ expirations should be formatted like the following "03/2025"
 ![Checkout](https://cdn.discordapp.com/attachments/1089997379815604345/1091129034341105824/image.png)
 ![Checkout Sucess](https://media.discordapp.net/attachments/1089997379815604345/1091130083336523906/image.png?width=2592&height=876)
 
+### Warning
+
+If you run into an error with the checkout/store api's not starting, you have this terrible thing on your computer called Windows.
+
+Windows will set the end of line sequence on the bash scripts to CLRF which linux doesn't support, you'll need to change this back to LF on each bash script.
+
+![image](https://user-images.githubusercontent.com/42778028/232946978-248d2bb0-5d89-4af2-8c6f-c025f4f67368.png)
