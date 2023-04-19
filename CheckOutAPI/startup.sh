@@ -10,45 +10,48 @@ done
 ip_address=$(ip addr show eth0 | grep inet | awk '{ print $2 }' | cut -d '/' -f 1)
 
 # Check if the Checkout service already exists in Kong
-if ! curl -sSf http://kong:8001/services/checkout > /dev/null; then
-    # Create a new service with the current instance as a route
+RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" http://kong:8001/services/checkout)
+echo "Response: $RESPONSE"
+if [ $RESPONSE -eq 404 ]; then
+    echo "Checkout Service does not exist. Creating service and upstream..."
+
+        # Create a new service with the current instance as a route
     curl -i -X POST \
         --url http://kong:8001/services/ \
-        --data "name=checkout" \
+        --data "name=checkout-service" \
         --data "url=http://$ip_address:5002"
+    echo "Created new Checkout service."
 
     # Add a route to the service
     curl -i -X POST \
-        --url http://kong:8001/services/checkout/routes \
-        --data "hosts[]=$ip_address" \
+        --url http://kong:8001/services/checkout-service/routes \
         --data 'paths[]=/checkout' \
+        --data name=checkout-route \
         --data 'methods[]=GET' \
         --data 'methods[]=POST' \
         --data 'methods[]=DELETE'
-        
-    echo "Created new Checkout service."
-fi
+    echo "Created Checkout route."
 
-# Check if the upstream for checkout-api already exists
-if ! curl -sSf http://kong:8001/upstreams/checkout-api-upstream > /dev/null; then
-    curl -i -X POST http://kong:8001/upstreams \
-        --data name=checkout-api-upstream
+  # Create an upstream for the service
+    curl -i -X POST \
+        --url http://kong:8001/upstreams/ \
+        --data "name=checkout-upstream"
+    echo "Created new Checkout upstream."
 
     # Update the Kong Service to use the created upstream
-    curl -i -X PATCH http://kong:8001/services/checkout \
-        --data host=checkout-api-upstream
-
-    echo "Created checkout-api-upstream."
+    curl -i -X PATCH http://kong:8001/services/checkout-service \
+        --data host=checkout-upstream
+    echo "Updated Checkout service to use the upstream."
+else
+    echo "Checkout Service/Upstream already exists. Skipping Creating ..."
 fi
+    # Add the instance to the upstream
+    curl -i -X POST \
+        --url http://kong:8001/upstreams/checkout-upstream/targets \
+        --data "target=$ip_address:5002"
+    echo "Added this instance to upstream."
 
-# Check if the target already exists in the upstream
-if ! curl -sSf http://kong:8001/upstreams/checkout-api-upstream/targets | grep -q "$ip_address"; then
-    # Register the current instance as a target in the upstream
-    curl -i -X POST http://kong:8001/upstreams/checkout-api-upstream/targets \
-        --data target=$ip_address:5002
-
-    echo "Added target to checkout-api-upstream."
-fi
 
 # Start the Flask app
-exec gunicorn -b 0.0.0.0:5002 app:app
+exec python app.py
+# exec gunicorn -b 0.0.0.0:5002 app:app
