@@ -1,12 +1,17 @@
+# docker-compose up --scale checkout-api=3 -d
 version: '0.1'
+networks:
+  otterstore:
+    driver: bridge
 
 services:
-
   mongo:
       image: mongo
       container_name: otterstore-mongo
       ports:
         - "27017:27017"
+      networks:
+        - otterstore
       volumes:
         - mongo-data:/data/db
       environment:
@@ -14,33 +19,95 @@ services:
         - MONGO_INITDB_ROOT_USERNAME=root
         - MONGO_INITDB_ROOT_PASSWORD=example
         
-  app-api:
-    build: ./AppsAPI
-    container_name: otterstore-app-api
+  store-api:
+    build: ./StoreAPI
     ports:
-      - "5001:5001"
+      - "5001"
+    networks:
+      - otterstore
     depends_on:
       - mongo
+      - kong
 
   checkout-api:
     build: ./CheckOutAPI
-    container_name: otterstore-checkout-api
     ports:
-      - "5002:5002"
+      - "5002"
+    networks:
+      - otterstore
     depends_on:
       - mongo
+      - kong
 
   cors-proxy:
     build: ./CORSProxy
     container_name: otterstore-CORS-proxy
     ports:
       - "3000:3000"
+    networks:
+      - otterstore
 
   flutter-web-app:
     build: ./otterstore_frontend
     container_name: otterstore-flutter-web-app
     ports:
       - "80:80"
+    networks:
+      - otterstore
 
+  kong-database:
+        image: postgres:latest
+        volumes:
+          - kong-database-data:/var/lib/postgresql/data
+        container_name: kong-database
+        environment:
+          - POSTGRES_USER=kong
+          - POSTGRES_DB=kong
+          - POSTGRES_PASSWORD=kong
+        ports:
+          - "5432:5432"
+        networks:
+          - otterstore
+
+  kong:
+    image: kong:latest
+    container_name: kong
+    environment:
+      - KONG_DATABASE=postgres
+      - KONG_PG_HOST=kong-database
+      - KONG_PG_USER=kong
+      - KONG_PG_PASSWORD=kong
+      - KONG_PROXY_ACCESS_LOG=/dev/stdout
+      - KONG_ADMIN_ACCESS_LOG=/dev/stdout
+      - KONG_PROXY_ERROR_LOG=/dev/stderr
+      - KONG_ADMIN_ERROR_LOG=/dev/stderr
+      - KONG_ADMIN_LISTEN=0.0.0.0:8001
+    ports:
+      - "8000:8000"
+      - "8443:8443"
+      - "8001:8001"
+    networks:
+      - otterstore
+    depends_on:
+      - kong-database
+    command: >
+      /bin/sh -c "
+        kong migrations bootstrap &&
+        kong start
+      "
+
+  DataGenerator:
+    image: python:3.11.2-alpine
+    working_dir: /app
+    networks:
+      - otterstore
+    volumes:
+      - ./AppData/sample_data.py:/app/sample_data.py
+      - ./AppData/startup.sh:/app/startup.sh
+    depends_on:
+      - mongo
+    command: "/app/startup.sh"
 volumes:
   mongo-data:
+  kong-database-data:
+

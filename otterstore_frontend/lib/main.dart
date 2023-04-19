@@ -237,7 +237,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
   Future<bool> _placeOrder(AppModel app) async {
     try {
       final response = await http.post(
-        Uri.parse('http://localhost:5002/order'),
+        Uri.parse('http://localhost:8000/checkout/order'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'email': email,
