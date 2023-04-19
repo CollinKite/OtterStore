@@ -6,28 +6,17 @@ Otterstore is an app store web app project that focuses on building apps into mi
 
 ## Installation
 
-Make sure you have python installed and have the pymongo package installed
-```bash
-pip install pymongo
-```
-
 Clone the repo
 
-Start All the containers:
+Start All the containers scaled:
 
 ```bash
-docker-compose up -d
-```
-
-Once all containers are running in Docker, run the sampledata.py file to add sample apps to Otterstore.
-
-```bash
-python sampledata.py
+docker-compose up --scale checkout-api=3 --scale store-api=3 -d
 ```
 
 ## Usage
 
-Once the App is running you can access it at [localhost](http://localhost/)
+Once everything is running you can access the app at [localhost](http://localhost/)
 
 If you try to check out make sure to use a valid card number that passes Luhn's algorithm
 
