@@ -1,4 +1,4 @@
-# docker-compose up --scale checkout-api=3 -d
+# docker-compose up --scale checkout-api=3 --scale store-api=3 -d
 version: '0.1'
 networks:
   otterstore:
