@@ -2,7 +2,7 @@
 
 Otterstore is an app store web app project that focuses on building apps into microservices with Docker.
 
-![Diagram](https://cdn.discordapp.com/attachments/1089997379815604345/1091127144698089583/image.png)
+![Diagram](https://cdn.discordapp.com/attachments/1089997379815604345/1098054785007095890/image.png)
 
 ## Installation
 
