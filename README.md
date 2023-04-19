@@ -8,7 +8,7 @@ Otterstore is an app store web app project that focuses on building apps into mi
 
 Clone the repo
 
-Start All the containers scaled:
+Start All the containers with the scaled APIs
 
 ```bash
 docker-compose up --scale checkout-api=3 --scale store-api=3 -d
